@@ -94,6 +94,43 @@ typedef struct avr_twi_t {
 	uint8_t next_twstate;
 } avr_twi_t;
 
+
+#define AVR_TWIPX_DECLARE(_name_periph, _name, _prr, _prtwi) \
+	.twi ## _name = { \
+		.name = '0' + _name_periph ,\
+		.disabled = AVR_IO_REGBIT(_prr, _prtwi), \
+		\
+		.r_twbr = TWBR ## _name , \
+		.r_twcr = TWCR ## _name , \
+		.r_twsr = TWSR ## _name , \
+		.r_twar = TWAR ## _name , \
+		.r_twamr = TWAMR ## _name , \
+		.r_twdr = TWDR ## _name , \
+		\
+		.twen = AVR_IO_REGBIT(TWCR ## _name , TWEN), \
+		.twea = AVR_IO_REGBIT(TWCR ## _name , TWEA), \
+		.twsta = AVR_IO_REGBIT(TWCR ## _name , TWSTA), \
+		.twsto = AVR_IO_REGBIT(TWCR ## _name , TWSTO), \
+		.twwc = AVR_IO_REGBIT(TWCR ## _name , TWWC), \
+		\
+		.twsr = AVR_IO_REGBITS(TWSR ## _name , TWS3, 0x1f), \
+		.twps = AVR_IO_REGBITS(TWSR ## _name , TWPS0, 0x3), \
+		\
+		.twi = { \
+			.enable = AVR_IO_REGBIT(TWCR ## _name , TWIE), \
+			.raised = AVR_IO_REGBIT(TWCR ## _name , TWINT), \
+			.raise_sticky = 1, \
+			.vector = TWI ## _name ## _vect, \
+		}, \
+	}
+// twsr : 5 bits
+// twps : 2 bits
+
+
+#define AVR_TWI_DECLARE(_name, _prr, _prtwi)	AVR_TWIPX_DECLARE(0, , _prr, _prtwi)
+#define AVR_TWIX_DECLARE(_name, _prr, _prtwi)	AVR_TWIPX_DECLARE(_name, _name, _prr, _prtwi)
+
+
 void
 avr_twi_init(
 		avr_t * avr,

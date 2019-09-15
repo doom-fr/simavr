@@ -136,48 +136,53 @@ typedef struct avr_uart_t {
 
 void avr_uart_init(avr_t * avr, avr_uart_t * port);
 
-#define AVR_UARTX_DECLARE(_name, _prr, _prusart) \
-	.uart ## _name = { \
-		.name = '0' + _name, \
+
+#define AVR_UARTRB_DECLARE(_name_reg, _name_bit, _prr, _prusart) \
+	.uart ## _name_reg = { \
+		.name = '0' + _name_reg, \
 		.disabled = AVR_IO_REGBIT(_prr, _prusart), \
 	\
-		.r_udr = UDR ## _name, \
+		.r_udr = UDR ## _name_reg, \
 	\
-		.fe = AVR_IO_REGBIT(UCSR ## _name ## A, FE ## _name), \
-		.dor = AVR_IO_REGBIT(UCSR ## _name ## A, DOR ## _name), \
-		.upe = AVR_IO_REGBIT(UCSR ## _name ## A, UPE ## _name), \
-		.u2x = AVR_IO_REGBIT(UCSR ## _name ## A, U2X ## _name), \
-		.txen = AVR_IO_REGBIT(UCSR ## _name ## B, TXEN ## _name), \
-		.rxen = AVR_IO_REGBIT(UCSR ## _name ## B, RXEN ## _name), \
-		.rxb8 = AVR_IO_REGBIT(UCSR ## _name ## B, RXB8 ## _name), \
-		.usbs = AVR_IO_REGBIT(UCSR ## _name ## C, USBS ## _name), \
-		.ucsz = AVR_IO_REGBITS(UCSR ## _name ## C, UCSZ ## _name ## 0, 0x3), \
-		.ucsz2 = AVR_IO_REGBIT(UCSR ## _name ## B, UCSZ ## _name ## 2), \
-		.ubrrl = AVR_IO_REGBITS(UBRR ## _name ## L, 0,0xFF), \
-		.ubrrh = AVR_IO_REGBITS(UBRR ## _name ## H, 0,0xF), \
+		.fe = AVR_IO_REGBIT(UCSR ## _name_reg ## A, FE ## _name_bit), \
+		.dor = AVR_IO_REGBIT(UCSR ## _name_reg ## A, DOR ## _name_bit), \
+		.upe = AVR_IO_REGBIT(UCSR ## _name_reg ## A, UPE ## _name_bit), \
+		.u2x = AVR_IO_REGBIT(UCSR ## _name_reg ## A, U2X ## _name_bit), \
+		.txen = AVR_IO_REGBIT(UCSR ## _name_reg ## B, TXEN ## _name_bit), \
+		.rxen = AVR_IO_REGBIT(UCSR ## _name_reg ## B, RXEN ## _name_bit), \
+		.rxb8 = AVR_IO_REGBIT(UCSR ## _name_reg ## B, RXB8 ## _name_bit), \
+		.usbs = AVR_IO_REGBIT(UCSR ## _name_reg ## C, USBS ## _name_bit), \
+		.ucsz = AVR_IO_REGBITS(UCSR ## _name_reg ## C, UCSZ ## _name_bit ## 0, 0x3), \
+		.ucsz2 = AVR_IO_REGBIT(UCSR ## _name_reg ## B, UCSZ ## _name_bit ## 2), \
+		.ubrrl = AVR_IO_REGBITS(UBRR ## _name_reg ## L, 0,0xFF), \
+		.ubrrh = AVR_IO_REGBITS(UBRR ## _name_reg ## H, 0,0xF), \
 		\
-		.r_ucsra = UCSR ## _name ## A, \
-		.r_ucsrb = UCSR ## _name ## B, \
-		.r_ucsrc = UCSR ## _name ## C, \
+		.r_ucsra = UCSR ## _name_reg ## A, \
+		.r_ucsrb = UCSR ## _name_reg ## B, \
+		.r_ucsrc = UCSR ## _name_reg ## C, \
 	\
 		.rxc = { \
-			.enable = AVR_IO_REGBIT(UCSR ## _name ## B, RXCIE ## _name), \
-			.raised = AVR_IO_REGBIT(UCSR ## _name ## A, RXC ## _name), \
-			.vector = USART ## _name ## _RX_vect, \
+			.enable = AVR_IO_REGBIT(UCSR ## _name_reg ## B, RXCIE ## _name_bit), \
+			.raised = AVR_IO_REGBIT(UCSR ## _name_reg ## A, RXC ## _name_bit), \
+			.vector = USART ## _name_reg ## _RX_vect, \
 			.raise_sticky = 1, \
 		}, \
 		.txc = { \
-			.enable = AVR_IO_REGBIT(UCSR ## _name ## B, TXCIE ## _name), \
-			.raised = AVR_IO_REGBIT(UCSR ## _name ## A, TXC ## _name), \
-			.vector = USART ## _name ## _TX_vect, \
+			.enable = AVR_IO_REGBIT(UCSR ## _name_reg ## B, TXCIE ## _name_bit), \
+			.raised = AVR_IO_REGBIT(UCSR ## _name_reg ## A, TXC ## _name_bit), \
+			.vector = USART ## _name_reg ## _TX_vect, \
 		}, \
 		.udrc = { \
-			.enable = AVR_IO_REGBIT(UCSR ## _name ## B, UDRIE ## _name), \
-			.raised = AVR_IO_REGBIT(UCSR ## _name ## A, UDRE ## _name), \
-			.vector = USART ## _name ## _UDRE_vect, \
+			.enable = AVR_IO_REGBIT(UCSR ## _name_reg ## B, UDRIE ## _name_bit), \
+			.raised = AVR_IO_REGBIT(UCSR ## _name_reg ## A, UDRE ## _name_bit), \
+			.vector = USART ## _name_reg ## _UDRE_vect, \
 			.raise_sticky = 1, \
 		}, \
 	}
+
+
+#define AVR_UARTX_DECLARE(_name, _prr, _prusart)	AVR_UARTRB_DECLARE(_name, _name, _prr, _prusart)
+
 
 // This macro is for older single-interface devices where variable names are bit divergent
 #define AVR_UART_DECLARE(_prr, _prusart, _upe_name, _rname_ix, _intr_c) \
